@@ -1,0 +1,15 @@
+AI CUT
+Copyright 2026 AI CUT contributors
+
+Original project code is provided under Apache-2.0. The standalone coffee demo
+includes original AI-generated imagery and designed motion; see demo/README.md.
+
+scripts/native_draft_worker.py adapts the MSVC string ABI reference from
+wenshui330/jy-draftc, copyright (c) 2026 wenshui330, MIT license. The full license,
+fixed reference source and attribution are in external/re-tools/jy-draftc/ and
+external/re-tools/NOTICE.md. That upstream source is not compiled by this project.
+
+Optional pefile is separately installed under its MIT license. Jianying/CapCut,
+their DLLs, FFmpeg executables, model weights, the unverified local JianYingDraft
+copy and collected datasets are not redistributed. Dependency licenses and
+third-party terms continue to apply independently.

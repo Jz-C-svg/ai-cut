@@ -1,0 +1,25 @@
+{
+  "preset": "medium",
+  "scene_cut": 0.3,
+  "sample_fps": 2.0,
+  "blur_sensitivity": 1.0,
+  "blur_abs_min": 60.0,
+  "blur_abs_good": 260.0,
+  "over_ratio": 0.08,
+  "dark_ratio": 0.2,
+  "motion_lively": 8.0,
+  "skin_face": 0.02,
+  "silence_db": -30.0,
+  "silence_min_len": 0.5,
+  "pad": 0.15,
+  "adapt": {
+    "delete_silences": {
+      "min_len": 0.35,
+      "db": -35.0
+    },
+    "delete_ai_cuts": {
+      "min_ratio": 0.45
+    }
+  },
+  "note": "selftest"
+}

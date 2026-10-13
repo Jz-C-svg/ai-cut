@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI cut 工作台</title>
+<style>
+  :root{
+    --bg:#0b0d12; --card:#161a23; --card2:#1b2029; --line:#252b38;
+    --fg:#e9eef5; --dim:#8b95a7; --dim2:#5f6878;
+    --brand:#5b8cff; --brand2:#7c5bff; --ok:#34d399; --warn:#fbbf24; --err:#f87171;
+    --r:14px; --shadow:0 6px 24px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 15% -10%,#16203a 0%,var(--bg) 55%) no-repeat,var(--bg);
+       color:var(--fg);font:15px/1.65 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif}
+  header{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);
+         background:rgba(11,13,18,.85);backdrop-filter:blur(10px);position:sticky;top:0;z-index:30}
+  .logo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--brand2));
+        display:grid;place-items:center;font-weight:800;font-size:13px}
+  header h1{font-size:16px;margin:0;font-weight:650}
+  .spacer{flex:1}
+  .badge{font-size:12px;color:var(--dim);border:1px solid var(--line);padding:3px 10px;border-radius:99px;background:var(--card)}
+  .badge.ok{color:var(--ok);border-color:#1d4a39;background:#0f2019}
+  .badge.err{color:var(--err);border-color:#4d2323;background:#1f1112}
+  nav{display:flex;gap:8px;overflow-x:auto;padding:12px 18px 0;position:sticky;top:59px;background:rgba(11,13,18,.85);
+      backdrop-filter:blur(10px);z-index:25;border-bottom:1px solid var(--line)}
+  nav button{background:var(--card);color:var(--dim);border:1px solid var(--line);padding:9px 15px;border-radius:11px 11px 0 0;
+             white-space:nowrap;cursor:pointer;font-size:14px;border-bottom:none}
+  nav button.active{color:#fff;background:linear-gradient(180deg,#1d2a45,#182034);border-color:#33507f}
+  main{padding:18px;max-width:1280px;margin:0 auto}
+  section{display:none;animation:fade .22s ease} section.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+  .two{display:grid;gap:14px;grid-template-columns:minmax(320px,420px) 1fr}
+  @media(max-width:900px){.two{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:var(--r);
+        padding:16px;box-shadow:var(--shadow)}
+  .card h3{margin:0 0 12px;font-size:14px;display:flex;align-items:center;gap:8px}
+  .card h3 .dot{width:7px;height:7px;border-radius:50%;background:var(--brand)}
+  .dim{color:var(--dim);font-size:13px} .muted{color:var(--dim2);font-size:12px}
+  button.primary{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;border:0;padding:10px 18px;
+                 border-radius:10px;cursor:pointer;font-size:14px;font-weight:600}
+  button.primary:disabled{opacity:.5;cursor:not-allowed}
+  button.ghost{background:var(--card);color:var(--fg);border:1px solid var(--line);padding:9px 15px;border-radius:10px;cursor:pointer;font-size:13px}
+  select,input,textarea{background:#0a0c11;color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:10px;width:100%;font:inherit}
+  textarea{min-height:120px;resize:vertical}
+  label{font-size:12px;color:var(--dim);display:block;margin:12px 0 5px}
+  pre{background:#080a0e;border:1px solid var(--line);border-radius:12px;padding:14px;overflow:auto;max-height:420px;
+      font:13px/1.6 ui-monospace,Consolas,monospace;white-space:pre-wrap}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)} th{color:var(--dim);font-size:12px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .stats{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+  .stat{background:linear-gradient(180deg,#1a2030,#141a26);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+  .stat .n{font-size:26px;font-weight:750;background:linear-gradient(135deg,#9db8ff,#c4a8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat .l{font-size:12px;color:var(--dim)}
+  .flow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .flow .node{background:#141a26;border:1px solid var(--line);border-radius:10px;padding:9px 13px;font-size:13px;cursor:pointer}
+  .flow .node:hover{border-color:#33507f;background:#182034}
+  .flow .arrow{color:var(--dim2)}
+  .stylegrid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+  .stylecard{position:relative;background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);
+             border-radius:var(--r);padding:14px;cursor:pointer;transition:.15s;overflow:hidden}
+  .stylecard:hover{transform:translateY(-2px);border-color:#33507f}
+  .stylecard.sel{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand) inset}
+  .stylecard::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:var(--accent,linear-gradient(90deg,var(--brand),var(--brand2)))}
+  .stylecard h4{margin:2px 0 6px;font-size:15px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+  .chip{font-size:11.5px;padding:3px 9px;border-radius:99px;background:#101520;border:1px solid var(--line);color:var(--dim)}
+  .chip.b{color:#a9c1ff;border-color:#2b3f66} .chip.g{color:#7ee2b8;border-color:#1d4a39}
+  .chip.y{color:#f7d488;border-color:#4d4020} .chip.r{color:#f6a6a6;border-color:#4d2323}
+  .steps{display:flex;gap:8px;flex-wrap:wrap}
+  .step{flex:1;min-width:130px;background:#121722;border:1px solid var(--line);border-radius:11px;padding:10px 12px}
+  .step.done{border-color:#1d4a39} .step.run{border-color:#4d4020}
+  .bars{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+  .bar{display:grid;grid-template-columns:96px 1fr 48px;gap:10px;align-items:center;font-size:13px}
+  .track{height:10px;background:#0d1117;border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+  .fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--brand),var(--brand2))}
+  .fill.ok{background:linear-gradient(90deg,#22c55e,#34d399)} .fill.warn{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+  .fill.err{background:linear-gradient(90deg,#ef4444,#f87171)}
+  .ringwrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .ring{position:relative;width:132px;height:132px} .ring svg{transform:rotate(-90deg)}
+  .ring .val{position:absolute;inset:0;display:grid;place-items:center;font-size:26px;font-weight:750}
+  .ring .val small{display:block;font-size:11px;color:var(--dim);font-weight:500;text-align:center}
+  .verdict{display:flex;align-items:center;gap:14px;padding:14px;border-radius:12px;border:1px solid var(--line);background:#121722}
+  .verdict.ok{border-color:#1d4a39;background:#0f2019} .verdict.err{border-color:#4d2323;background:#1f1112}
+  .verdict .big{font-size:22px;font-weight:750}
+  .hit{padding:10px 12px;border:1px solid #4d2323;background:#1a1113;border-radius:10px;margin-top:8px}
+  .hit .cat{font-size:11.5px;color:#f6a6a6;border:1px solid #4d2323;padding:1px 7px;border-radius:99px}
+  .fileitem{display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;
+            background:#121722;margin-bottom:7px;cursor:pointer}
+  .fileitem:hover{border-color:#33507f}
+  .fileitem .ico{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:#0d1117;border:1px solid var(--line)}
+  .msg{padding:10px 12px;border-radius:10px;border:1px dashed var(--line);color:var(--dim);font-size:13px}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .switch{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--dim)}
+  .switch input{width:auto}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">AI</div><h1>AI cut 工作台</h1>
+  <span class="badge" id="health">连接中…</span><div class="spacer"></div>
+  <span class="badge" id="tokenState"></span>
+  <button class="ghost" id="connectService">连接服务</button>
+</header>
+
+<nav>
+  <button data-tab="overview" class="active">📊 概览</button>
+  <button data-tab="console">🎬 AI 剪辑台</button>
+  <button data-tab="library">🎨 内容库</button>
+  <button data-tab="review">🛡 评估与合规</button>
+  <button data-tab="assets">🗂 素材与产物</button>
+  <button data-tab="research">🔎 联网比对</button>
+</nav>
+
+<main>
+  <div class="card" id="authPanel" hidden style="margin-bottom:14px">
+    <h3>连接本机 AI CUT 服务</h3>
+    <form id="authForm">
+      <label for="authToken">访问令牌</label>
+      <input id="authToken" type="password" autocomplete="off" required placeholder="输入主机服务的访问令牌">
+      <label class="switch"><input type="checkbox" id="rememberToken"> 在本机记住令牌</label>
+      <button class="primary" type="submit">连接工作台</button>
+      <div class="dim" id="authMessage" style="margin-top:8px"></div>
+    </form>
+  </div>
+  <section id="overview" class="active">
+    <div class="stats" id="stats"></div>
+    <div class="grid" style="margin-top:14px">
+      <div class="card"><h3><span class="dot"></span>工作流</h3><div class="flow" id="flow"></div>
+        <div class="dim" style="margin-top:10px">点节点跳转；主流程在「AI 剪辑台」。</div></div>
+      <div class="card"><h3><span class="dot"></span>系统</h3><div id="sysinfo" class="dim">读取中…</div></div>
+    </div>
+    <div class="card" style="margin-top:14px"><h3><span class="dot"></span>任务</h3><div id="tasklist" class="dim">暂无任务</div></div>
+  </section>
+
+  <section id="console">
+    <div class="two">
+      <div>
+        <div class="card">
+          <h3><span class="dot"></span>1 选素材</h3>
+          <select id="aeVideo"></select>
+          <label>或手动填路径</label>
+          <input id="aePath" placeholder="work/normalized/example.mp4">
+          <div class="row" style="margin-top:12px">
+            <button class="ghost" id="aeUnderstand">识别素材</button>
+            <span class="muted" id="aeUnderstandHint">识别产出角色/节奏/删除建议/封面</span>
+          </div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3><span class="dot"></span>实时观察与分析</h3>
+          <div class="row">
+            <label style="margin:0;flex:1">画面采样间隔（秒）<input id="brainInterval" type="number" min="0.5" max="30" step="0.5" value="2"></label>
+            <label class="switch" style="margin:20px 0 0"><input id="brainVision" type="checkbox"> 逐帧视觉模型</label>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <button class="primary" id="brainStart">开始观察素材</button>
+            <button class="ghost" id="brainScreenStart">观察剪映窗口</button>
+            <button class="ghost" id="brainStop" disabled>停止</button>
+            <span class="badge" id="brainStatus">未启动</span>
+          </div>
+          <div class="muted" id="brainProgress" style="margin-top:8px">观察素材可分析画面/音频事件；观察剪映可实时更新窗口预览。勾选本地视觉模型后会异步描述画面，速度受本机推理影响。</div>
+          <img id="brainFrame" alt="最新分析画面" style="display:none;width:100%;max-height:250px;object-fit:contain;background:#080a0e;border-radius:10px;margin-top:12px">
+          <div id="brainEvents" class="dim" style="margin-top:8px;max-height:240px;overflow:auto">尚无观察事件</div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3><span class="dot"></span>1.5 发布平台（自动调节奏参数）</h3>
+          <div class="row" id="platformRow"></div>
+          <div class="dim" id="platformHint">选平台自动适配节奏：抖音快切/B站中速/TikTok loop</div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3><span class="dot"></span>2 选风格</h3>
+          <div class="stylegrid" id="styleCards"></div>
+          <div class="dim" id="aeStyleInfo" style="margin-top:10px">选一个风格看它会怎么剪。</div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3><span class="dot"></span>3 高级选项</h3>
+          <label>封面文案（留空用识别候选）</label><input id="aeCover">
+          <label>行动指令（留空按目标自动给）</label><input id="aeCta">
+          <label>背景音乐</label>
+          <div class="row"><select id="aeBgm" style="flex:1"></select>
+            <input id="aeBgmPath" placeholder="或填路径" style="flex:1"></div>
+          <label>节拍文件（卡点风格用）</label><select id="aeBeats"></select>
+          <label>B-roll 画面索引</label><select id="aeBroll"></select>
+          <div class="row" style="margin-top:12px">
+            <label class="switch" style="margin:0"><input type="checkbox" id="aeSmart" checked> AI 识别辅助</label>
+            <label class="switch" style="margin:0"><input type="checkbox" id="aeDrop"> 画质淘汰</label>
+            <label class="switch" style="margin:0"><input type="checkbox" id="aeKeep"> 保留停顿</label>
+          </div>
+          <div class="row" style="margin-top:14px">
+            <button class="primary" id="aeRun">生成方案并检查</button>
+            <button class="ghost" id="aePlan">只看方案</button>
+          </div>
+          <div class="muted" style="margin-top:8px">先生成并检查方案，再在右侧确认交付。原生资源和独立 MP4 的支持范围不同，不支持的参数会明确提示。</div>
+        </div>
+      </div>
+      <div>
+        <div class="card"><h3><span class="dot"></span>剪辑流程</h3>
+          <div class="steps">
+            <div class="step" id="step1"><div>识别</div><div class="muted">信号+文本+视觉</div></div>
+            <div class="step" id="step2"><div>粗剪</div><div class="muted">删口误/去停顿</div></div>
+            <div class="step" id="step3"><div>分镜</div><div class="muted">按风格与节奏</div></div>
+            <div class="step" id="step4"><div>包装</div><div class="muted">字幕/特效/封面</div></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:14px"><h3><span class="dot"></span>输出</h3>
+          <div id="aeOut"><div class="msg">选素材与风格，点「生成方案并检查」或「只看方案」。</div></div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3><span class="dot"></span>4 确认与交付</h3>
+          <label for="deliverySheet">剪辑决策单</label>
+          <input id="deliverySheet" list="deliverySheets" placeholder="生成方案后自动填入，也可粘贴已有决策单路径">
+          <datalist id="deliverySheets"></datalist>
+          <div class="grid">
+            <div><label for="deliverySoftware">目标剪辑软件</label><select id="deliverySoftware"></select></div>
+            <div><label for="deliveryEngine">交付方式</label><select id="deliveryEngine"></select></div>
+          </div>
+          <div id="deliveryCapability" class="dim" style="margin-top:8px"></div>
+          <button class="ghost" id="deliveryReview" style="margin-top:12px">查看并检查当前方案</button>
+          <div id="deliverySummary" class="dim" style="margin-top:12px">请先生成方案，或选择已有决策单。</div>
+          <details style="margin-top:10px"><summary>展开详细剪辑方案</summary><pre id="deliveryDetails"></pre></details>
+          <label class="switch"><input type="checkbox" id="deliveryConfirm" disabled> 我已检查当前方案，确认按所选方式执行</label>
+          <label class="switch"><input type="checkbox" id="aePublish"> 同时复制到剪映草稿库</label>
+          <button class="primary" id="deliveryExecute" disabled>确认后执行交付</button>
+          <div id="deliveryOutput" style="margin-top:14px" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="library">
+    <div class="toolbar">
+      <button class="ghost" data-lib="styles">🎬 风格</button>
+      <button class="ghost" data-lib="hooks">🪝 钩子</button>
+      <button class="ghost" data-lib="structures">🧩 结构</button>
+      <button class="ghost" data-lib="topics">💡 选题</button>
+    </div>
+    <div id="libview"><div class="msg">选择上面一项</div></div>
+  </section>
+
+  <section id="review">
+    <div class="grid">
+      <div class="card"><h3><span class="dot"></span>合规自检</h3>
+        <textarea id="cmpText" placeholder="粘贴文案、台词或字幕…"></textarea>
+        <div class="row" style="margin-top:10px"><button class="primary" id="cmpRun">检测文案</button></div>
+        <label>或检测已有逐字稿</label>
+        <div class="row"><select id="cmpFile" style="flex:1"></select><button class="ghost" id="cmpFileRun">检测文件</button></div>
+        <div id="cmpOut" style="display:none;margin-top:12px"></div>
+      </div>
+      <div class="card"><h3><span class="dot"></span>发布前评分</h3>
+        <select id="evalSheet"></select>
+        <div class="row" style="margin-top:10px"><button class="primary" id="evalPre">开始评分</button></div>
+        <div id="evalPreOut" style="display:none;margin-top:12px"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px"><h3><span class="dot"></span>发布后诊断</h3>
+      <div class="row"><select id="evalData" style="flex:1"></select><button class="primary" id="evalPost">开始诊断</button></div>
+      <div id="evalPostOut" style="display:none;margin-top:12px"></div>
+    </div>
+  </section>
+
+  <section id="assets">
+    <div class="toolbar">
+      <button class="ghost" data-file="sheets">📝 决策单</button>
+      <button class="ghost" data-file="transcripts">🎙 逐字稿</button>
+      <button class="ghost" data-file="drafts">🎞 草稿</button>
+      <button class="ghost" data-file="output">📦 导出产物</button>
+      <button class="ghost" data-file="data">📊 数据报告</button>
+    </div>
+    <div class="grid">
+      <div class="card"><h3><span class="dot"></span>文件</h3><div id="filelist" class="dim">选择上面一类</div></div>
+      <div class="card"><h3><span class="dot"></span>内容预览</h3><pre id="fileview">（未选择）</pre></div>
+    </div>
+    <div class="grid" style="margin-top:14px">
+      <div class="card"><h3><span class="dot"></span>建 B-roll 索引</h3>
+        <input id="biDir" placeholder="素材目录，例如 ./media">
+        <div class="row" style="margin-top:10px"><button class="ghost" id="biRun">建立索引</button>
+          <span class="muted">让 AI 认识你的素材库，便于自动配画面</span></div>
+      </div>
+      <div class="card"><h3><span class="dot"></span>音乐节拍分析</h3>
+        <div class="row"><select id="beatsAudio" style="flex:1"></select><button class="ghost" id="beatsRun">分析节拍</button></div>
+        <div class="muted" style="margin-top:8px">用于卡点风格：画面会跟着节拍切换</div>
+      </div>
+    </div>
+    <div id="assetOut" style="display:none;margin-top:14px"></div>
+  </section>
+
+  <section id="research">
+    <div class="card"><h3><span class="dot"></span>实时联网比对</h3>
+      <div class="grid">
+        <div><label>本片主题</label><input id="aeTopic" placeholder="例如 孕期腹围增长规律"></div>
+        <div><label>逐字稿（可选）</label><select id="aeTopicTr"></select></div>
+      </div>
+      <div class="row" style="margin-top:12px"><button class="primary" id="aeResearch">开始比对</button>
+        <span class="muted">实时检索同类做法、用户关心点、合规限流点，结果带来源</span></div>
+      <div id="aeResearchOut" style="display:none;margin-top:12px"></div>
+    </div>
+  </section>
+</main>
+<script src="delivery.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

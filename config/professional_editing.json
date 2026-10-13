@@ -1,0 +1,8 @@
+{
+  "version": "professional-editing-1",
+  "padding_seconds": 0.08,
+  "calibration": "Uncalibrated source-release defaults",
+  "limitations": "No bundled data or detector/ASR/visual quality acceptance is provided.",
+  "max_caption_chars": 15,
+  "caption_cps_review": 9
+}

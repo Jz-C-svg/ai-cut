@@ -1,0 +1,75 @@
+{
+  "说明": "各剪辑软件的 UI 档案。快捷键为软件默认值，如你改过快捷键，请在此处同步修改。",
+  "剪映专业版": {
+    "进程": "JianyingPro",
+    "标题关键词": [
+      "剪映",
+      "JianyingPro"
+    ],
+    "常用快捷键": {
+      "分割": "ctrl+b",
+      "删除": "delete",
+      "撤销": "ctrl+z",
+      "重做": "ctrl+shift+z",
+      "放大时间线": "ctrl+=",
+      "缩小时间线": "ctrl+-",
+      "导出": "ctrl+e",
+      "播放暂停": "space",
+      "返回首页": "ctrl+alt+q",
+      "退出剪映": "ctrl+q",
+      "保存": "ctrl+s"
+    },
+    "优先方式": "Experimental adapter; verify your own installed version and UI actions."
+  },
+  "CapCut": {
+    "进程": "CapCut",
+    "标题关键词": [
+      "CapCut"
+    ],
+    "常用快捷键": {
+      "分割": "ctrl+b",
+      "删除": "delete",
+      "撤销": "ctrl+z",
+      "导出": "ctrl+e"
+    },
+    "优先方式": "Experimental adapter; verify your own installed version and UI actions."
+  },
+  "Premiere Pro": {
+    "进程": "Adobe Premiere Pro",
+    "标题关键词": [
+      "Adobe Premiere Pro",
+      "Premiere"
+    ],
+    "常用快捷键": {
+      "分割": "ctrl+k",
+      "删除": "delete",
+      "波纹删除": "shift+delete",
+      "撤销": "ctrl+z",
+      "导出": "ctrl+m",
+      "适配时间线": "shift+/"
+    },
+    "优先方式": "Experimental adapter; verify your own installed version and UI actions."
+  },
+  "DaVinci Resolve": {
+    "进程": "Resolve",
+    "标题关键词": [
+      "DaVinci Resolve"
+    ],
+    "常用快捷键": {
+      "分割": "ctrl+b",
+      "删除": "delete",
+      "撤销": "ctrl+z",
+      "导出": "ctrl+shift+e",
+      "编辑页": "shift+2"
+    },
+    "优先方式": "Experimental adapter; verify your own installed version and UI actions."
+  },
+  "记事本-测试专用": {
+    "进程": "notepad",
+    "标题关键词": [
+      "ui-bridge-test"
+    ],
+    "常用快捷键": {},
+    "优先方式": "Experimental adapter; verify your own installed version and UI actions."
+  }
+}

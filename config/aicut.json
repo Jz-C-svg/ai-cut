@@ -1,0 +1,65 @@
+{
+  "project": "AI CUT",
+  "root": "",
+  "python": "",
+  "ffmpeg": "ffmpeg",
+  "ffprobe": "ffprobe",
+  "render": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "crf": 20,
+    "preset": "medium",
+    "audio_bitrate": "192k"
+  },
+  "asr": {
+    "model": "small",
+    "device": "cpu",
+    "compute_type": "int8",
+    "language": "zh",
+    "beam_size": 5,
+    "vad": true,
+    "model_dir": "models"
+  },
+  "draft_root": "",
+  "vision": {
+    "model": "qwen3-vl:8b",
+    "deep_model": "qwen3-vl:8b",
+    "bundled": false,
+    "manifest": "config/bundled_models.json"
+  },
+  "keywords": {
+    "cover_text": "封面承诺",
+    "cta": "行动指令"
+  },
+  "ai_backends": [
+    {
+      "name": "ollama-local",
+      "type": "ollama",
+      "base_url": "http://127.0.0.1:11434",
+      "model": "qwen3-vl:8b",
+      "vision_model": "qwen3-vl:8b",
+      "api_key": null,
+      "enabled": true,
+      "prefer": [
+        "vision",
+        "semantic",
+        "text",
+        "decision",
+        "summary",
+        "timeline"
+      ],
+      "timeout": 600,
+      "max_tokens": 2048,
+      "temperature": 0.2
+    }
+  ],
+  "ai_router": {
+    "default_strategy": "local_first",
+    "log_usage": true,
+    "global_paid_api_enabled": false
+  },
+  "ai_backend_default": "ollama-local",
+  "gui_theme": "simple",
+  "ollama_base_url": "http://127.0.0.1:11434"
+}

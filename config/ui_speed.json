@@ -1,0 +1,10 @@
+{
+  "move_speed": 0.15,
+  "click_speed": 0.1,
+  "key_delay_s": 0.05,
+  "action_settle_s": 0.5,
+  "page_settle_s": 1.0,
+  "open_draft_settle_s": 2.0,
+  "measured": false,
+  "note": "Unmeasured source-release defaults; not a verified UI profile."
+}

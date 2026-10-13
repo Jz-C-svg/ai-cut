@@ -1,0 +1,6 @@
+interface:
+  display_name: "AI CUT 自主剪辑"
+  short_description: "一句话驱动素材理解、剪映工程制作、软件操作衔接和实际成片核验"
+  default_prompt: "使用 $ai-cut-director 按我的素材与指令连续完成剪辑，直接返回已验证的工程和成片。"
+policy:
+  allow_implicit_invocation: true

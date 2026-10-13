@@ -1,0 +1,2 @@
+# Python >= 3.10. The capabilities/help/read-only CLI paths use the standard library.
+# Install only the feature groups you need from requirements-optional.txt.

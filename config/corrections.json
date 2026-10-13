@@ -1,0 +1,8 @@
+{
+  "说明": "Add corrections for media you own or are authorized to process.",
+  "状态取值": [
+    "待本人确认",
+    "已确认"
+  ],
+  "修正": {}
+}
